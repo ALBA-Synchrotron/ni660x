@@ -9,8 +9,8 @@ import time
 class CapturePosition:
 
     # Builder
-    def __init__(self, counter, source_trigger):
-        print("Hola")
+    def __init__(self, counter, source_trigger, encoder_type, encoder_zindex,
+                 angle_units):
         self._task = None
         self._counter = counter
         self._source_trigger = source_trigger
@@ -18,47 +18,41 @@ class CapturePosition:
         self._data = np.zeros(0)
         self._thread = None
         self._stop = False
+        self._entype = encoder_type
+        self._enzindex = encoder_zindex
+        self._angunit = angle_units
 
     # Destructor
     def __del__(self):
-        print("Adeu")
         self.stop()
 
     # Private method
     def _read(self, samples):
-        print("Soy el hijo")
         i = 0
         while not self._stop and i < samples:
-            print("Entro")
-            # self._data[i] = self._reader.read_one_sample_double(timeout=-1)
+            self._data[i] = self._reader.read_one_sample_double(timeout=-1)
             time.sleep(20)
             i += 1
 
         self._task.stop()
         self._thread = None
         self._stop = True
-        print("Acabo el hijo")
 
     # start and stop methods
-    def start(self, samples, encoder_type, encoder_zindex, angle_units):
-        print("Start")
+    def start(self, samples):
         if self._task is not None:
             self._task.close()
-
         self._task = nidaqmx.Task('timer')
         self._data = np.zeros(samples)
         self._task.ci_channels.add_ci_ang_encoder_chan(self._counter, "",
-                                                       encoder_type, False,
-                                                       0, encoder_zindex,
-                                                       angle_units, 24,
+                                                       self._entype, False,
+                                                       0, self._enzindex,
+                                                       self._angunit, 24,
                                                        0.0, "")
-
         self._task.timing.cfg_samp_clk_timing(1000.0, self._source_trigger,
                                               samps_per_chan=samples)
         self._reader = CounterReader(self._task.in_stream)
-
         self._task.start()
-
         self._stop = False
         self._thread = threading.Thread(target=self._read, args=[samples],
                                         daemon=True)

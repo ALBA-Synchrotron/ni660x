@@ -9,10 +9,10 @@ import time
 class CapturePosition:
 
     # Builder
-    def __init__(self, counter, source_trigger, encoder_type, encoder_zindex,
+    def __init__(self, channel, source_trigger, encoder_type, encoder_zindex,
                  angle_units):
         self._task = None
-        self._counter = counter
+        self._channel = channel
         self._source_trigger = source_trigger
         self._reader = None
         self._data = np.zeros(0)
@@ -44,7 +44,7 @@ class CapturePosition:
             self._task.close()
         self._task = nidaqmx.Task('timer')
         self._data = np.zeros(samples)
-        self._task.ci_channels.add_ci_ang_encoder_chan(self._counter, "",
+        self._task.ci_channels.add_ci_ang_encoder_chan(self._channel, "",
                                                        self._entype, False,
                                                        0, self._enzindex,
                                                        self._angunit, 24,

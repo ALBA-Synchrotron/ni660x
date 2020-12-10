@@ -5,6 +5,8 @@ import click
 import yaml
 from .counter import PulseCounter
 from .generator import PulseTimeGenerator
+from .positioncapture import CapturePosition
+from nidaqmx.constants import EncoderType, EncoderZIndexPhase, AngleUnits
 
 
 # TODO Implement logs
@@ -37,6 +39,13 @@ class CountingApp:
                 config['channel'], name, config['gate'], config['source'])
 
         # TODO implement encoder capture
+        conf = self.config['position_capture']['pc1']
+        channel = conf['channel']
+        trigger = conf['trigger']
+        encoder = conf['encoder']
+        options = self.encoder_to_object(encoder['type'], encoder[
+            'zindexphase'], encoder['angleunit'])
+        CapturePosition(channel, trigger, options[0], options[1], options[2])
 
     def __del__(self):
         term_from = self.config['connections']['from']
@@ -152,6 +161,42 @@ class CountingApp:
     def is_done(self):
         return self._timer.done
 
+    def encoder_to_object(encodertype, encoderzindex, anlgeunits):
+        argum = []
+        if encodertype == "TWO_PULSE_COUNTING":
+            argum.append(EncoderType.TWO_PULSE_COUNTING)
+        elif encodertype == "X_1":
+            argum.append(EncoderType.X_1)
+        elif encodertype == "X_2":
+            argum.append(EncoderType.X_2)
+        elif encodertype == "X_4":
+            argum.append(EncoderType.X_4)
+        else:
+            argum.append(False)
+
+        if encoderzindex == "AHIGH_BHIGH":
+            argum.append(EncoderZIndexPhase.AHIGH_BHIGH)
+        elif encoderzindex == "AHIGH_BLOW":
+            argum.append(EncoderZIndexPhase.AHIGH_BLOW)
+        elif encoderzindex == "ALOW_BHIGH":
+            argum.append(EncoderZIndexPhase.ALOW_BHIGH)
+        elif encoderzindex == "ALOW_BLOW":
+            argum.append(EncoderZIndexPhase.ALOW_BLOW)
+        else:
+            argum.append(False)
+
+        if anlgeunits == "DEGREES":
+            argum.append(AngleUnits.DEGREES)
+        elif anlgeunits == "FROM_CUSTOM_SCALE":
+            argum.append(AngleUnits.FROM_CUSTOM_SCALE)
+        elif anlgeunits == "RADIANS":
+            argum.append(AngleUnits.RADIANS)
+        elif anlgeunits == "TICKS":
+            argum.append(AngleUnits.TICKS)
+        else:
+            argum.append(False)
+
+        return argum
 
 @click.command()
 @click.option('-h', '--host', default='localhost', type=click.STRING)

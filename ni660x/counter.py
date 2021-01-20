@@ -12,16 +12,16 @@ class PulseCounter(BaseChannel):
 
         super().__init__(channel,channel_name)
         # Add pulse width channel
-        self._counter = self._task.ci_channels.add_ci_pulse_width_chan(
+        counter = self._task.ci_channels.add_ci_pulse_width_chan(
             channel, channel_name, units=TimeUnits.TICKS, starting_edge=edge)
 
         # Configure timing and transfer mechanims
         self._task.timing.samp_timing_type = SampleTimingType.IMPLICIT
-        self._counter.ci_data_xfer_mech = \
+        counter.ci_data_xfer_mech = \
             DataTransferActiveTransferMode.INTERRUPT
 
         # Configure the source and the gate
-        self._counter.ci_ctr_timebase_src = timebase_src
-        self._counter.ci_pulse_width_term = gate_src
+        counter.ci_ctr_timebase_src = timebase_src
+        counter.ci_pulse_width_term = gate_src
 
 

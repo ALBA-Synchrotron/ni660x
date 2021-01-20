@@ -27,14 +27,10 @@ counters:
       channel: /Dev1/ctr4
       source: /Dev1/PFI31 #Ctr2 src
       gate: /Dev1/RTSI0
-  c6:
-      channel: /Dev1/ctr5
-      source: /Dev1/PFI31 #Ctr2 src
-      gate: /Dev1/RTSI0
 
 position_capture:
   pc1:
-      channel: /Dev1/ctr6
+      channel: /Dev1/ctr5
       trigger: /Dev1/RTSI0
       encoder:
         type: X_4

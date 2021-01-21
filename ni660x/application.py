@@ -25,32 +25,42 @@ class CountingApp:
 
         # Do connections
         self.system = System.local()
-        term_from = self.config['connections']['from']
-        terms_to = self.config['connections']['to']
-        for term_to in terms_to:
-            self.system.connect_terms(term_from, term_to)
-            print('Connect', term_from, 'to', term_to)
+        if 'connections' in self.config:
+            term_from = self.config['connections']['from']
+            terms_to = self.config['connections']['to']
+            for term_to in terms_to:
+                self.system.connect_terms(term_from, term_to)
+                print('Connect', term_from, 'to', term_to)
+        else:
+            print("Do not find the connectios in the config file")
 
         self._timer = PulseTimeGenerator(self.config['timer']['channel'])
         self._channels = {}
         self._channels_started = []
-
-        for name, config in self.config['counters'].items():
-            self._channels[name] = PulseCounter(
-                config['channel'], name, config['gate'], config['source'])
+        if 'counters' in self.config:
+            for name, config in self.config['counters'].items():
+                self._channels[name] = PulseCounter(
+                    config['channel'], name, config['gate'], config['source'])
+        else:
+            print("Do not find the counters in the config file")
 
         # TODO implement encoder capture
-
-        for name, config in self.config['position_capture'].items():
-            channel = config['channel']
-            trigger = config['trigger']
-            encoder = config['encoder']
-            options = self._encoder_to_object(encoder['type'], encoder[
-                'zindexphase'], encoder['angleunit'])
-            self._channels[name] = CapturePosition(channel,name, trigger,
-                                                   options[0],
-                                                options[1], options[2])
-
+        if 'position_capture' in self.config:
+            for name, config in self.config['position_capture'].items():
+                channel = config['channel']
+                trigger = config['trigger']
+                encoder = config['encoder']
+                options = self._encoder_to_object(encoder['type'], encoder[
+                    'zindexphase'], encoder['angleunit'])
+                if False not in options:
+                    self._channels[name] = CapturePosition(channel, name,
+                                                           trigger, options[
+                                                               0], options[
+                                                               1],  options[2])
+                else:
+                    print("At least one of the parameters is wrong")
+        else:
+            print("Do not find the position capture in the config file")
 
     def __del__(self):
         term_from = self.config['connections']['from']
@@ -167,9 +177,10 @@ class CountingApp:
 
     def _encoder_to_object(self, encodertype, encoderzindex, anlgeunits):
         argum = []
-        encondertype = encodertype.upper()
+        encodertype = encodertype.upper()
         encoderzindex = encoderzindex.upper()
         anlgeunits = anlgeunits.upper()
+
         if encodertype == "TWO_PULSE_COUNTING":
             argum.append(EncoderType.TWO_PULSE_COUNTING)
         elif encodertype == "X_1":
@@ -180,6 +191,7 @@ class CountingApp:
             argum.append(EncoderType.X_4)
         else:
             argum.append(False)
+            print("The options are: TWO_PULSE_COUNTING | X_1 | X_2 | X_4 ")
 
         if encoderzindex == "AHIGH_BHIGH":
             argum.append(EncoderZIndexPhase.AHIGH_BHIGH)
@@ -191,6 +203,8 @@ class CountingApp:
             argum.append(EncoderZIndexPhase.ALOW_BLOW)
         else:
             argum.append(False)
+            print("The options are: AHIGH_BHIGH | AHIGH_BLOW | ALOW_BHIGH "
+                  "| ALOW_BLOW ")
 
         if anlgeunits == "DEGREES":
             argum.append(AngleUnits.DEGREES)
@@ -202,6 +216,8 @@ class CountingApp:
             argum.append(AngleUnits.TICKS)
         else:
             argum.append(False)
+            print("The options are: DEGREES | FROM_CUSTOM_SCALE | RADIANS "
+                  "| TICKS ")
 
         return argum
 

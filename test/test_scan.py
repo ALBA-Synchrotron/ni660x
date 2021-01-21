@@ -13,11 +13,11 @@ def main(samples, int_time, runs, host, port):
     addr = 'http://{}:{}'.format(host, port)
     print('Connecting to {}'.format(addr))
     proxy = xmlrpc.client.ServerProxy(addr)
-    channels = ['c1', 'c3']
+    channels = ['c1', 'c3','pc1']
     low_time = 0.0001
     wait_time = (int_time + low_time) * 3
     for i in range(runs):
-        data = {'c1': [], 'c3': []}
+        data = {'c1': [], 'c3': [], 'pc1': []}
         samples_readies = 0
         proxy.set_channels_enabled([], False)
         proxy.set_channels_enabled(channels, True)

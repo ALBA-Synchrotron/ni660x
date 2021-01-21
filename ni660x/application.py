@@ -34,18 +34,23 @@ class CountingApp:
         self._timer = PulseTimeGenerator(self.config['timer']['channel'])
         self._channels = {}
         self._channels_started = []
+
         for name, config in self.config['counters'].items():
             self._channels[name] = PulseCounter(
                 config['channel'], name, config['gate'], config['source'])
 
         # TODO implement encoder capture
-        conf = self.config['position_capture']['pc1']
-        channel = conf['channel']
-        trigger = conf['trigger']
-        encoder = conf['encoder']
-        options = self.encoder_to_object(encoder['type'], encoder[
-            'zindexphase'], encoder['angleunit'])
-        CapturePosition(channel, trigger, options[0], options[1], options[2])
+
+        for name, config in self.config['position_capture'].items():
+            channel = config['channel']
+            trigger = config['trigger']
+            encoder = config['encoder']
+            options = self._encoder_to_object(encoder['type'], encoder[
+                'zindexphase'], encoder['angleunit'])
+            self._channels[name] = CapturePosition(channel,name, trigger,
+                                                   options[0],
+                                                options[1], options[2])
+
 
     def __del__(self):
         term_from = self.config['connections']['from']
@@ -82,7 +87,6 @@ class CountingApp:
 
     def stop(self):
         self._timer.stop()
-
         for channel in self._channels.values():
             channel.stop()
 
@@ -161,8 +165,11 @@ class CountingApp:
     def is_done(self):
         return self._timer.done
 
-    def encoder_to_object(encodertype, encoderzindex, anlgeunits):
+    def _encoder_to_object(self, encodertype, encoderzindex, anlgeunits):
         argum = []
+        encondertype = encodertype.upper()
+        encoderzindex = encoderzindex.upper()
+        anlgeunits = anlgeunits.upper()
         if encodertype == "TWO_PULSE_COUNTING":
             argum.append(EncoderType.TWO_PULSE_COUNTING)
         elif encodertype == "X_1":
@@ -198,6 +205,7 @@ class CountingApp:
 
         return argum
 
+
 @click.command()
 @click.option('-h', '--host', default='localhost', type=click.STRING)
 @click.option('-p', '--port', default=9000, type=click.INT)
@@ -215,4 +223,3 @@ def main(host, port, log_level, config):
         server.serve_forever()
     except KeyboardInterrupt:
         print('Exiting...')
-

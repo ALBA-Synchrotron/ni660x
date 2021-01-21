@@ -10,7 +10,7 @@ class PulseCounter(BaseChannel):
     def __init__(self, channel, channel_name, gate_src, timebase_src,
                  edge=Edge.RISING):
 
-        super().__init__(channel,channel_name)
+        super().__init__(channel, channel_name)
         # Add pulse width channel
         counter = self._task.ci_channels.add_ci_pulse_width_chan(
             channel, channel_name, units=TimeUnits.TICKS, starting_edge=edge)
@@ -23,5 +23,3 @@ class PulseCounter(BaseChannel):
         # Configure the source and the gate
         counter.ci_ctr_timebase_src = timebase_src
         counter.ci_pulse_width_term = gate_src
-
-

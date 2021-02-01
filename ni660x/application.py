@@ -5,6 +5,8 @@ import click
 import yaml
 from .counter import PulseCounter
 from .generator import PulseTimeGenerator
+from .positioncapture import CapturePosition
+from nidaqmx.constants import EncoderType, EncoderZIndexPhase, AngleUnits
 
 
 # TODO Implement logs
@@ -23,20 +25,42 @@ class CountingApp:
 
         # Do connections
         self.system = System.local()
-        term_from = self.config['connections']['from']
-        terms_to = self.config['connections']['to']
-        for term_to in terms_to:
-            self.system.connect_terms(term_from, term_to)
-            print('Connect', term_from, 'to', term_to)
+        if 'connections' in self.config:
+            term_from = self.config['connections']['from']
+            terms_to = self.config['connections']['to']
+            for term_to in terms_to:
+                self.system.connect_terms(term_from, term_to)
+                print('Connect', term_from, 'to', term_to)
+        else:
+            print("Do not find the connectios in the config file")
 
         self._timer = PulseTimeGenerator(self.config['timer']['channel'])
         self._channels = {}
         self._channels_started = []
-        for name, config in self.config['counters'].items():
-            self._channels[name] = PulseCounter(
-                config['channel'], name, config['gate'], config['source'])
+        if 'counters' in self.config:
+            for name, config in self.config['counters'].items():
+                self._channels[name] = PulseCounter(
+                    config['channel'], name, config['gate'], config['source'])
+        else:
+            print("Do not find the counters in the config file")
 
         # TODO implement encoder capture
+        if 'position_capture' in self.config:
+            for name, config in self.config['position_capture'].items():
+                channel = config['channel']
+                trigger = config['trigger']
+                encoder = config['encoder']
+                options = self._encoder_to_object(encoder['type'], encoder[
+                    'zindexphase'], encoder['angleunit'])
+                if False not in options:
+                    self._channels[name] = CapturePosition(channel, name,
+                                                           trigger, options[
+                                                               0], options[
+                                                               1],  options[2])
+                else:
+                    print("At least one of the parameters is wrong")
+        else:
+            print("Do not find the position capture in the config file")
 
     def __del__(self):
         term_from = self.config['connections']['from']
@@ -73,7 +97,6 @@ class CountingApp:
 
     def stop(self):
         self._timer.stop()
-
         for channel in self._channels.values():
             channel.stop()
 
@@ -152,6 +175,52 @@ class CountingApp:
     def is_done(self):
         return self._timer.done
 
+    def _encoder_to_object(self, encodertype, encoderzindex, anlgeunits):
+        argum = []
+        encodertype = encodertype.upper()
+        encoderzindex = encoderzindex.upper()
+        anlgeunits = anlgeunits.upper()
+
+        if encodertype == "TWO_PULSE_COUNTING":
+            argum.append(EncoderType.TWO_PULSE_COUNTING)
+        elif encodertype == "X_1":
+            argum.append(EncoderType.X_1)
+        elif encodertype == "X_2":
+            argum.append(EncoderType.X_2)
+        elif encodertype == "X_4":
+            argum.append(EncoderType.X_4)
+        else:
+            argum.append(False)
+            print("The options are: TWO_PULSE_COUNTING | X_1 | X_2 | X_4 ")
+
+        if encoderzindex == "AHIGH_BHIGH":
+            argum.append(EncoderZIndexPhase.AHIGH_BHIGH)
+        elif encoderzindex == "AHIGH_BLOW":
+            argum.append(EncoderZIndexPhase.AHIGH_BLOW)
+        elif encoderzindex == "ALOW_BHIGH":
+            argum.append(EncoderZIndexPhase.ALOW_BHIGH)
+        elif encoderzindex == "ALOW_BLOW":
+            argum.append(EncoderZIndexPhase.ALOW_BLOW)
+        else:
+            argum.append(False)
+            print("The options are: AHIGH_BHIGH | AHIGH_BLOW | ALOW_BHIGH "
+                  "| ALOW_BLOW ")
+
+        if anlgeunits == "DEGREES":
+            argum.append(AngleUnits.DEGREES)
+        elif anlgeunits == "FROM_CUSTOM_SCALE":
+            argum.append(AngleUnits.FROM_CUSTOM_SCALE)
+        elif anlgeunits == "RADIANS":
+            argum.append(AngleUnits.RADIANS)
+        elif anlgeunits == "TICKS":
+            argum.append(AngleUnits.TICKS)
+        else:
+            argum.append(False)
+            print("The options are: DEGREES | FROM_CUSTOM_SCALE | RADIANS "
+                  "| TICKS ")
+
+        return argum
+
 
 @click.command()
 @click.option('-h', '--host', default='localhost', type=click.STRING)
@@ -170,4 +239,3 @@ def main(host, port, log_level, config):
         server.serve_forever()
     except KeyboardInterrupt:
         print('Exiting...')
-

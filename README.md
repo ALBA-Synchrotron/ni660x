@@ -3,7 +3,7 @@ Ni660x
 
 - The purpose of the project
 - How to install
-- How to use
+- [`How to use`](#How to use).
 
 The purpose of the project
 ---------------

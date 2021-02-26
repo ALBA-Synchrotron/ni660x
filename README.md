@@ -13,6 +13,7 @@ How to install
 ---------------
 
 #### 1. Install the drivers
+[Download and Install NI Driver Software on Linux Desktop](https://www.ni.com/es-es/support/documentation/supplemental/18/downloading-and-installing-ni-driver-software-on-linux-desktop.html).
 
 #### 2. Install the library
 
@@ -49,4 +50,4 @@ The arguments you need to execute the program depends of the own program.
 In this example the arguments are:
 1. The number of samples.
 2. The time in seconds you take one samples.
-3.
+3. Number of repetitions of the scan

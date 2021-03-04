@@ -6,5 +6,7 @@ setup(name="ni660x",
     author="Alba sincotron",
     install_requires=["nidaqmx","click","pyyaml",],
     packages=find_packages(),
-    test_suite="test"
+    test_suite="test",
+    classifiers=["License :: OSI Approved :: GNU General Public License v3 (GPLv3)",],
+    license="GNU General Public License v3"
 )

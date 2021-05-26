@@ -1,15 +1,22 @@
-from nidaqmx.system import System
 from xmlrpc.server import SimpleXMLRPCServer
 import logging
+from typing import Dict, List
+
 import click
 import yaml
+from nidaqmx.system import System
+from nidaqmx.constants import EncoderType, EncoderZIndexPhase, AngleUnits
+
 from .counter import PulseCounter
 from .generator import PulseTimeGenerator
 from .positioncapture import CapturePosition
-from nidaqmx.constants import EncoderType, EncoderZIndexPhase, AngleUnits
 
 
 # TODO Implement logs
+ChannelsList = List[str]
+ChannelData = List[float]
+ChannelsData = Dict[str, ChannelData]
+
 
 class CountingApp:
     """
@@ -19,7 +26,7 @@ class CountingApp:
     acquisition parameters: high, low and delay.
     """
 
-    def __init__(self, yaml_file):
+    def __init__(self, yaml_file: str):
         with open(yaml_file) as f:
             self.config = yaml.full_load(f)
 
@@ -69,7 +76,7 @@ class CountingApp:
             self.system.disconnect_terms(term_from, term_to)
             print('Disconnect', term_from, 'to', term_to)
 
-    def start_channels(self, samples):
+    def start_channels(self, samples: int):
         """ Method to start only the counters and encoders"""
         self._channels_started = []
         for name, channel in self._channels.items():
@@ -77,11 +84,13 @@ class CountingApp:
             if channel.enabled:
                 self._channels_started.append(name)
 
-    def start_timer(self, samples, high_time, low_time, initial_delay=0):
+    def start_timer(self, samples: int, high_time: float, low_time: float,
+                    initial_delay: float = 0):
         """ Method to start only the generator"""
         self._timer.start(samples, high_time, low_time, initial_delay)
 
-    def start_all(self, samples, high_time, low_time, initial_delay=0):
+    def start_all(self, samples: int, high_time: float, low_time: float,
+                  initial_delay: float = 0):
         """ Method to start first the channels and after the timer
         :param samples: number of sample to acquire
         :type int
@@ -95,14 +104,18 @@ class CountingApp:
         self.start_channels(samples)
         self.start_timer(samples, high_time, low_time, initial_delay)
 
-    def stop(self):
+    def stop_all(self):
+        self.stop_channels()
+        self.stop_timer()
+
+    def stop_timer(self):
         self._timer.stop()
+
+    def stop_channels(self):
         for channel in self._channels.values():
             channel.stop()
 
-        # TODO stop encoders
-
-    def get_all_data(self):
+    def get_all_data(self) -> ChannelsData:
         """
         Return a dictionary with the data acquired for all channels.  The
         length of each data can be different according to the acquisition
@@ -114,14 +127,15 @@ class CountingApp:
             data[name] = self._channels_started[name].data.tolist()
         return data
 
-    def get_names(self):
+    def get_names(self) -> ChannelsList:
         """
         Return names for all counters and encoders
         :return: [str]
         """
         return list(self._channels.keys())
 
-    def get_channel_data(self, name, start=0, end=-1):
+    def get_channel_data(self, name: str, start: int = 0,
+                         end: int = -1) -> ChannelData:
         """
         Return channel (counter or encoder) data
         :param name: counter or encoder name
@@ -135,7 +149,8 @@ class CountingApp:
         data = self._channels[name].data[start:end].tolist()
         return data
 
-    def set_channels_enabled(self, names=[], enabled=True):
+    def set_channels_enabled(self, names: ChannelsList = [],
+                             enabled: bool = True):
         """
         Set the enabled attribute of each channel. If the channel is
         enabled it will acquire data.
@@ -151,7 +166,7 @@ class CountingApp:
         for name in names:
             self._channels[name].enabled = enabled
 
-    def get_channels_enabled(self):
+    def get_channels_enabled(self) -> Dict[str, bool]:
         """
         Return a dictionary with the value of enabled attribute for each
         channel
@@ -163,7 +178,7 @@ class CountingApp:
             status[name] = channel.enabled
         return status
 
-    def get_samples_readies(self):
+    def get_samples_readies(self) -> int:
         samples_readies = []
         for name in self._channels_started:
             samples_readies.append(self._channels[name].sample_readies)
@@ -172,7 +187,16 @@ class CountingApp:
         else:
             return 0
 
-    def is_done(self):
+    def get_start_src(self) -> str:
+        """
+        Return start source if it is empty the external start is disabled
+        """
+        return self._timer.start_src
+
+    def set_start_src(self, value: str):
+        self._timer.start_src = value
+
+    def is_done(self) -> bool:
         return self._timer.done
 
     def _encoder_to_object(self, encodertype, encoderzindex, anlgeunits):

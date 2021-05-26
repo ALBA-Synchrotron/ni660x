@@ -3,10 +3,10 @@ from nidaqmx.constants import SampleTimingType
 
 
 class PulseTimeGenerator:
-    def __init__(self, channel, start_src=None):
+    def __init__(self, channel, start_src=''):
         self._task = None
         self._channel = channel
-        self._start_src = start_src
+        self.start_src = start_src
 
     def __del__(self):
         if self._task is not None:

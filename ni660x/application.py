@@ -135,7 +135,7 @@ class CountingApp:
         return list(self._channels.keys())
 
     def get_channel_data(self, name: str, start: int = 0,
-                         end: int = -1) -> ChannelData:
+                         end: int = None) -> ChannelData:
         """
         Return channel (counter or encoder) data
         :param name: counter or encoder name
@@ -146,8 +146,12 @@ class CountingApp:
         :type int
         :return: [float]
         """
-        data = self._channels[name].data[start:end].tolist()
-        return data
+        if end is None:
+            data = self._channels[name].data[start:]
+        else:
+            data = self._channels[name].data[start:end]
+
+        return data.tolist()
 
     def set_channels_enabled(self, names: ChannelsList = [],
                              enabled: bool = True):

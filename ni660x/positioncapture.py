@@ -19,6 +19,6 @@ class CapturePosition(BaseChannel):
                                                        0.0, "")
 
     def start(self, samples):
-        self._task.timing.cfg_samp_clk_timing(1000.0, self._source_trigger,
+        self._task.timing.cfg_samp_clk_timing(10000.0, self._source_trigger,
                                               samps_per_chan=samples)
         super().start(samples)

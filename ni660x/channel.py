@@ -34,8 +34,10 @@ class BaseChannel:
         self.sample_readies = 0
         if not self.enabled:
             return
-
-        self._task.timing.samp_quant_samp_per_chan = samples
+        if samples == 1:
+            self._task.timing.samp_quant_samp_per_chan = 2
+        else:
+            self._task.timing.samp_quant_samp_per_chan = samples
         self._stop = False
         self._thread = threading.Thread(target=self._read, args=[samples])
         self._task.start()

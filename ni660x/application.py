@@ -112,11 +112,17 @@ class CountingApp:
         self.stop_timer()
 
     def stop_timer(self):
-        self._timer.stop()
+        try:
+            self._timer.stop()
+        except Exception:
+            pass
 
     def stop_channels(self):
         for channel in self._channels.values():
-            channel.stop()
+            try:
+                channel.stop()
+            except Exception:
+                pass
 
     def get_all_data(self) -> ChannelsData:
         """

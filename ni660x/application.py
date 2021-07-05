@@ -10,7 +10,7 @@ from nidaqmx.constants import EncoderType, EncoderZIndexPhase, AngleUnits
 from .counter import PulseCounter
 from .generator import PulseTimeGenerator
 from .positioncapture import CapturePosition
-
+from .helpers import get_pfi
 
 # TODO Implement logs
 ChannelsList = List[str]
@@ -33,13 +33,14 @@ class CountingApp:
         # Do connections
         self.system = System.local()
         if 'connections' in self.config:
-            term_from = self.config['connections']['from']
+            term_from = get_pfi(self.config['connections']['from'])
             terms_to = self.config['connections']['to']
             for term_to in terms_to:
+                term_to = get_pfi(term_to)
                 self.system.connect_terms(term_from, term_to)
                 print('Connect', term_from, 'to', term_to)
         else:
-            print("Do not find the connectios in the config file")
+            print("Do not find the connections in the config file")
 
         self._timer = PulseTimeGenerator(self.config['timer']['channel'])
         self._channels = {}
@@ -47,7 +48,8 @@ class CountingApp:
         if 'counters' in self.config:
             for name, config in self.config['counters'].items():
                 self._channels[name] = PulseCounter(
-                    config['channel'], name, config['gate'], config['source'])
+                    config['channel'], name, get_pfi(config['gate']),
+                    get_pfi(config['source']))
         else:
             print("Do not find the counters in the config file")
 
@@ -55,7 +57,7 @@ class CountingApp:
         if 'position_capture' in self.config:
             for name, config in self.config['position_capture'].items():
                 channel = config['channel']
-                trigger = config['trigger']
+                trigger = get_pfi(config['trigger'])
                 encoder = config['encoder']
                 options = self._encoder_to_object(encoder['type'], encoder[
                     'zindexphase'], encoder['angleunit'])
@@ -70,9 +72,10 @@ class CountingApp:
             print("Do not find the position capture in the config file")
 
     def __del__(self):
-        term_from = self.config['connections']['from']
+        term_from = get_pfi(self.config['connections']['from'])
         terms_to = self.config['connections']['to']
         for term_to in terms_to:
+            term_to = get_pfi(term_to)
             self.system.disconnect_terms(term_from, term_to)
             print('Disconnect', term_from, 'to', term_to)
 

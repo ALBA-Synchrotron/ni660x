@@ -180,7 +180,6 @@ class NI660XRPCCounterCtrl(CounterTimerController):
             self._channel_config[name][parameter] = value
 
     def AbortOne(self, axis):
+        self._log.debug('abort ni660x %s', axis)
         pass
 
-    def AbortAll(self):
-        self._proxy.stop_channels()

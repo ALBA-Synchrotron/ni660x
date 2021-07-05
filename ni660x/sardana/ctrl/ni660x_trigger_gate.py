@@ -98,7 +98,7 @@ class NI660XRPCTriggerGateCtrl(TriggerGateController):
         """
         Abort generation - stop the specified channel
         """
-        self._proxy.stop_timer()
+        self._proxy.stop_all()
 
     def GetAxisExtraPar(self, axis, name):
         name = name.lower()

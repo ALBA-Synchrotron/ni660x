@@ -7,10 +7,10 @@ import yaml
 from nidaqmx.system import System
 from nidaqmx.constants import EncoderType, EncoderZIndexPhase, AngleUnits
 
-from .counter import PulseCounter
-from .generator import PulseTimeGenerator
-from .positioncapture import CapturePosition
-from .helpers import get_pfi
+from ..counter import PulseCounter
+from ..generator import PulseTimeGenerator
+from ..positioncapture import CapturePosition
+from ..helpers import get_pfi
 
 # TODO Implement logs
 ChannelsList = List[str]
@@ -260,11 +260,10 @@ class CountingApp:
 
 
 @click.command()
-@click.option('-h', '--host', default='localhost', type=click.STRING)
 @click.option('-p', '--port', default=9000, type=click.INT)
 @click.option('--log-level', 'log_level', default=logging.INFO)
 @click.argument('config', type=click.STRING)
-def main(host, port, log_level, config):
+def main(port, log_level, config):
     app = CountingApp(config)
     server = SimpleXMLRPCServer(('0', port), logRequests=True,
                                 allow_none=True)

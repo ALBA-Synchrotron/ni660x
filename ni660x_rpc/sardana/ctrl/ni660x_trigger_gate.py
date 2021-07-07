@@ -4,6 +4,7 @@ from sardana import State
 from sardana.pool.pooldefs import SynchDomain, SynchParam
 from sardana.pool.controller import TriggerGateController, Type, \
     Description, DefaultValue, Access, DataAccess
+from ni660x_rpc.rpc.client import get_ni_client
 
 
 class NI660XRPCTriggerGateCtrl(TriggerGateController):
@@ -35,7 +36,7 @@ class NI660XRPCTriggerGateCtrl(TriggerGateController):
         TriggerGateController.__init__(self, inst, props, *args, **kwargs)
         try:
             self._addr = 'http://{}:{}'.format(self.host, self.port)
-            self._proxy = ServerProxy(self._addr)
+            self._proxy = get_ni_client(self._addr)
             self._log.debug('Connected to  %s', self._addr)
         except Exception as e:
             self._log.error('Can not connect to %s: %s', self._addr, e)

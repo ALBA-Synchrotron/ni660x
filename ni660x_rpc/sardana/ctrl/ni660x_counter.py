@@ -4,7 +4,7 @@ import numpy
 from sardana.pool.controller import CounterTimerController, Type, \
     Description, DefaultValue, Access, DataAccess, AcqSynch
 from sardana import State
-
+from ni660x_rpc.rpc.client import get_ni_client
 
 ALLOWED_SYNC = {AcqSynch.HardwareGate, AcqSynch.HardwareStart,
                 AcqSynch.HardwareTrigger}
@@ -73,7 +73,7 @@ class NI660XRPCCounterCtrl(CounterTimerController):
 
         try:
             self._addr = 'http://{}:{}'.format(self.host, self.port)
-            self._proxy = ServerProxy(self._addr)
+            self._proxy = get_ni_client(self._addr)
             self._log.debug('Connected to  %s', self._addr)
         except Exception as e:
             self._log.error('Can not connect to %s: %s', self._addr, e)

@@ -18,7 +18,7 @@ class CapturePosition(BaseChannel):
                                                        self._angunit, 24,
                                                        0.0, "")
 
-    def start(self, samples):
+    def start(self, samples, high_time):
         self._task.timing.cfg_samp_clk_timing(10000.0, self._source_trigger,
                                               samps_per_chan=samples)
-        super().start(samples)
+        super().start(samples, high_time)

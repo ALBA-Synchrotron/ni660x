@@ -1,9 +1,9 @@
 from xmlrpc.client import ServerProxy
 from threading import Lock
-from functools import cache
+from functools import lru_cache
 
 
-@cache
+@lru_cache(maxsize=8)
 def get_ni_client(addr):
     return NI660XRPCClient(addr)
 

@@ -185,3 +185,5 @@ class NI660XRPCCounterCtrl(CounterTimerController):
         self._log.debug('abort ni660x %s', axis)
         pass
 
+    def AbortAll(self):
+        self._proxy.stop_channels()

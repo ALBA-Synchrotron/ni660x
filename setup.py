@@ -7,7 +7,7 @@ setup(name="ni660x_rpc",
     install_requires=["nidaqmx", "click", "pyyaml",],
     entry_points={
       'console_scripts': [
-          'ni660x-rpc-server=ni660x.rpc.server:main',
+          'ni660x-rpc-server=ni660x_rpc.rpc.server:main',
       ]
     },
     packages=find_packages(),

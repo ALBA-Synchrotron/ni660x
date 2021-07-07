@@ -69,6 +69,7 @@ class NI660XRPCCounterCtrl(CounterTimerController):
         self._shape = (1,)
         self._samples = 0
         self._sscan = False
+        self._high_time = 0
 
         try:
             self._addr = 'http://{}:{}'.format(self.host, self.port)
@@ -105,6 +106,7 @@ class NI660XRPCCounterCtrl(CounterTimerController):
         self._last_index_read.clear()
         self._first_encoder.clear()
         self._proxy.stop_channels()
+        self._high_time = value
 
         if self._synchronization not in ALLOWED_SYNC:
             raise ValueError('This controller only works with Hardware'
@@ -130,7 +132,7 @@ class NI660XRPCCounterCtrl(CounterTimerController):
         if not self._first_start:
             self._proxy.set_channels_enabled(self.used_channels, True)
             self._first_start = True
-            self._proxy.start_channels(self._samples)
+            self._proxy.start_channels(self._samples, self._high_time)
 
     def ReadAll(self):
         self._new_index_ready = self._proxy.get_samples_readies() - 1

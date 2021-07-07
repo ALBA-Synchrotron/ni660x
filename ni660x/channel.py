@@ -3,6 +3,8 @@ from nidaqmx.stream_readers import CounterReader
 import numpy as np
 import threading
 
+MAX_TIMEOUT = 0.1
+
 
 class BaseChannel:
     """
@@ -15,6 +17,7 @@ class BaseChannel:
         self._data = np.zeros(0)
         self.sample_readies = 0
         self.enabled = True
+        self._timeout = 0
 
         # Create the task
         self._task = Task('task' + channel_name)
@@ -28,10 +31,13 @@ class BaseChannel:
     def __del__(self):
         self._task.close()
 
-    def start(self, samples):
+    def start(self, samples, high_time):
         self._task.stop()
         self._data = np.zeros(samples)
         self.sample_readies = 0
+        if high_time > MAX_TIMEOUT:
+            high_time = MAX_TIMEOUT
+        self._timeout = high_time
         if not self.enabled:
             return
         if samples == 1:
@@ -53,12 +59,17 @@ class BaseChannel:
 
     def stop(self):
         self._stop = True
-        self._task.stop()
+        self._thread.join()
 
     def _read(self, samples):
         i = 0
         while not self._stop and samples != 0:
-            self._data[i] = self._reader.read_one_sample_double(timeout=-1)
+            try:
+                self._data[i] = self._reader.read_one_sample_double(
+                    timeout=self._timeout)
+            except Exception:
+                continue
+
             i += 1
             samples -= 1
             self.sample_readies += 1

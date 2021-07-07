@@ -79,11 +79,11 @@ class CountingApp:
             self.system.disconnect_terms(term_from, term_to)
             print('Disconnect', term_from, 'to', term_to)
 
-    def start_channels(self, samples: int):
+    def start_channels(self, samples: int, high_time: float):
         """ Method to start only the counters and encoders"""
         self._channels_started = []
         for name, channel in self._channels.items():
-            channel.start(samples)
+            channel.start(samples, high_time)
             if channel.enabled:
                 self._channels_started.append(name)
 
@@ -104,7 +104,7 @@ class CountingApp:
         :param initial_delay: pulse initial delay in seconds
         :type float
         """
-        self.start_channels(samples)
+        self.start_channels(samples, high_time)
         self.start_timer(samples, high_time, low_time, initial_delay)
 
     def stop_all(self):

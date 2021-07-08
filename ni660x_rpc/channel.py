@@ -4,6 +4,7 @@ import numpy as np
 import threading
 
 MAX_TIMEOUT = 0.1
+MIN_TIMEOUT = 0.01
 
 
 class BaseChannel:
@@ -37,6 +38,8 @@ class BaseChannel:
         self.sample_readies = 0
         if high_time > MAX_TIMEOUT:
             high_time = MAX_TIMEOUT
+        elif high_time < MIN_TIMEOUT:
+            high_time = MIN_TIMEOUT
         self._timeout = high_time
         if not self.enabled:
             return

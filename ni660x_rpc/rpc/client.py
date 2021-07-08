@@ -3,10 +3,10 @@ from threading import Lock
 from functools import lru_cache
 import logging
 
+
 @lru_cache(maxsize=8)
 def get_ni_client(addr):
     return NI660XRPCClient(addr)
-
 
 
 class NI660XRPCClient:

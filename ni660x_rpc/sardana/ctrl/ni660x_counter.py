@@ -143,7 +143,12 @@ class NI660XRPCCounterCtrl(CounterTimerController):
         self._log.debug('ReadOne %s new: %s, last %s', axis,
                         self._new_index_ready,
                         last_index_read)
-        if self._new_index_ready <= last_index_read:
+        if self._sscan and self._new_index_ready == last_index_read:
+            data = numpy.array(self._proxy.get_channel_data(
+                name, last_index_read, self._new_index_ready + 1))
+            self._log.debug('ReadOne sscan %s data: %s', axis, data)
+            return data.tolist()
+        elif self._new_index_ready <= last_index_read:
             return []
 
         data = numpy.array(self._proxy.get_channel_data(

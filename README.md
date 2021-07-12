@@ -36,9 +36,9 @@ In the directory "/config" you have some examples about how to write this file.
 #### 2. Init the program
 Run the program with your configuration file and leave it in background . After that you can execute your programs or test the operation.
 You could run the program like this:
-> python -m ni660x ['configuration file']
+> ni660x-rpc-server ['configuration file']
 ##### Example:
-> python -m ni660x config/config03.yaml
+> ni660x-rpc-server config/config03.yaml
 
 #### 3. Execute
 When the program is running you can execute the programs.

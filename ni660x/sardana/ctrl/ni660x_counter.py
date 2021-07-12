@@ -4,7 +4,7 @@ import numpy
 from sardana.pool.controller import CounterTimerController, Type, \
     Description, DefaultValue, Access, DataAccess, AcqSynch
 from sardana import State
-from ni660x_rpc.rpc.client import get_ni_client
+from ni660x.rpc.client import get_ni_client
 
 ALLOWED_SYNC = {AcqSynch.HardwareGate, AcqSynch.HardwareStart,
                 AcqSynch.HardwareTrigger}

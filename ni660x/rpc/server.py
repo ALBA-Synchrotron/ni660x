@@ -274,4 +274,5 @@ def main(port, log_level, config):
         print('Use Control-C to exit')
         server.serve_forever()
     except KeyboardInterrupt:
+        # TODO Improve the close
         print('Exiting...')

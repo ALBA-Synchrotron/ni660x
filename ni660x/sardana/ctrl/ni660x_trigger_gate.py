@@ -4,7 +4,7 @@ from sardana import State
 from sardana.pool.pooldefs import SynchDomain, SynchParam
 from sardana.pool.controller import TriggerGateController, Type, \
     Description, DefaultValue, Access, DataAccess
-from ni660x_rpc.rpc.client import get_ni_client
+from ni660x.rpc.client import get_ni_client
 
 
 class NI660XRPCTriggerGateCtrl(TriggerGateController):

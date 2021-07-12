@@ -1,13 +1,13 @@
 from setuptools import setup, find_packages
 
-setup(name="ni660x_rpc",
+setup(name="ni660x",
     version="version='0.2.0'",
     description="RPC server for NI660X counter application",
     author="Alba sincotron",
     install_requires=["nidaqmx", "click", "pyyaml",],
     entry_points={
       'console_scripts': [
-          'ni660x-rpc-server=ni660x_rpc.rpc.server:main',
+          'ni660x-rpc-server=ni660x.rpc.server:main',
       ]
     },
     packages=find_packages(),

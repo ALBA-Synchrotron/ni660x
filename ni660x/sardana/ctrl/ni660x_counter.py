@@ -115,7 +115,6 @@ class NI660XRPCCounterCtrl(CounterTimerController):
         self._sscan = False
         if nb_starts > 1:
             self._sscan = True
-        self._proxy.set_channels_enabled([], False)
         self._first_start = False
 
     def LoadOne(self, axis, value, repetitions, latency):
@@ -132,7 +131,8 @@ class NI660XRPCCounterCtrl(CounterTimerController):
         if not self._first_start:
             self._proxy.set_channels_enabled(self.used_channels, True)
             self._first_start = True
-            self._proxy.start_channels(self._samples, self._high_time)
+            self._proxy.start_channels(self.used_channels, self._samples,
+                                       self._high_time)
 
     def ReadAll(self):
         self._new_index_ready = self._proxy.get_samples_readies() - 1

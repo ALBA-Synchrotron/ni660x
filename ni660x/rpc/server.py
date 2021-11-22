@@ -79,10 +79,12 @@ class CountingApp:
             self.system.disconnect_terms(term_from, term_to)
             print('Disconnect', term_from, 'to', term_to)
 
-    def start_channels(self, samples: int, high_time: float):
+    def start_channels(self, names: ChannelsList, samples: int,
+                       high_time: float):
         """ Method to start only the counters and encoders"""
         self._channels_started = []
-        for name, channel in self._channels.items():
+        for name in names:
+            channel = self._channels[name]
             channel.start(samples, high_time)
             if channel.enabled:
                 self._channels_started.append(name)
@@ -117,8 +119,10 @@ class CountingApp:
         except Exception:
             pass
 
-    def stop_channels(self):
-        for channel in self._channels.values():
+    def stop_channels(self, channels=[]):
+        if not channels:
+            channels = self._channels.values()
+        for channel in channels:
             try:
                 channel.stop()
             except Exception:

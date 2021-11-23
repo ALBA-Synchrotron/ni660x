@@ -135,7 +135,11 @@ class NI660XRPCCounterCtrl(CounterTimerController):
                                        self._high_time)
 
     def ReadAll(self):
-        self._new_index_ready = self._proxy.get_samples_readies() - 1
+        sample_readies = []
+        for channel in self.used_channels:
+            sample_readies.append(self._proxy.get_samples_readies(channel))
+        min_sample_readies = min(sample_readies)
+        self._new_index_ready = min_sample_readies - 1
 
     def ReadOne(self, axis):
         name = self.channels_names[axis-1]

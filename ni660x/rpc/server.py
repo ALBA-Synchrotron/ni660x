@@ -191,14 +191,8 @@ class CountingApp:
             status[name] = channel.enabled
         return status
 
-    def get_samples_readies(self) -> int:
-        samples_readies = []
-        for name in self._channels_started:
-            samples_readies.append(self._channels[name].sample_readies)
-        if len(samples_readies):
-            return min(samples_readies)
-        else:
-            return 0
+    def get_samples_readies(self, name: str) -> int:
+        return self._channels[name].sample_readies
 
     def get_start_src(self) -> str:
         """

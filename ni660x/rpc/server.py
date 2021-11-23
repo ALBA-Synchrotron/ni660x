@@ -124,17 +124,17 @@ class CountingApp:
             except Exception:
                 pass
 
-    def get_all_data(self) -> ChannelsData:
-        """
-        Return a dictionary with the data acquired for all channels.  The
-        length of each data can be different according to the acquisition
-        state.
-        :return: {str: [float]}
-        """
-        data = {}
-        for name in self._channels_started:
-            data[name] = self._channels_started[name].data.tolist()
-        return data
+    # def get_all_data(self) -> ChannelsData:
+    #     """
+    #     Return a dictionary with the data acquired for all channels.  The
+    #     length of each data can be different according to the acquisition
+    #     state.
+    #     :return: {str: [float]}
+    #     """
+    #     data = {}
+    #     for name in self._channels_started:
+    #         data[name] = self._channels_started[name].data.tolist()
+    #     return data
 
     def get_names(self) -> ChannelsList:
         """

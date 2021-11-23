@@ -44,7 +44,6 @@ class CountingApp:
 
         self._timer = PulseTimeGenerator(self.config['timer']['channel'])
         self._channels = {}
-        self._channels_started = []
         if 'counters' in self.config:
             for name, config in self.config['counters'].items():
                 self._channels[name] = PulseCounter(
@@ -82,12 +81,9 @@ class CountingApp:
     def start_channels(self, names: ChannelsList, samples: int,
                        high_time: float):
         """ Method to start only the counters and encoders"""
-        self._channels_started = []
         for name in names:
             channel = self._channels[name]
             channel.start(samples, high_time)
-            if channel.enabled:
-                self._channels_started.append(name)
 
     def start_timer(self, samples: int, high_time: float, low_time: float,
                     initial_delay: float = 0):
@@ -106,7 +102,7 @@ class CountingApp:
         :param initial_delay: pulse initial delay in seconds
         :type float
         """
-        self.start_channels(samples, high_time)
+        self.start_channels(self._channels.keys(), samples, high_time)
         self.start_timer(samples, high_time, low_time, initial_delay)
 
     def stop_all(self):

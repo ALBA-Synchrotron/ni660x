@@ -20,6 +20,8 @@ class CapturePosition(BaseChannel):
                                                        start_angle, "")
 
     def start(self, samples, high_time):
+        channel = self._task.channels[0]
+        channel.ci_ang_encoder_initial_angle = self._start_angle
         self._task.timing.cfg_samp_clk_timing(10000.0, self._source_trigger,
                                               samps_per_chan=samples)
         super().start(samples, high_time)

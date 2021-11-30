@@ -60,7 +60,7 @@ class CountingApp:
                 encoder = config['encoder']
                 options = self._encoder_to_object(encoder['type'], encoder[
                     'zindexphase'], encoder['angleunit'])
-                if 'start' in encoder:
+                if 'initial' in encoder:
                     initial_angle = encoder['initial']
                 else:
                     initial_angle = 0

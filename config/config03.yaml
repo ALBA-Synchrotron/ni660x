@@ -36,5 +36,5 @@ position_capture:
         type: X_4
         zindexphase: AHIGH_BHIGH
         angleunit: TICKS
-        start: 2147483647  # middle range
+        initial: 2147483647  # middle range
 

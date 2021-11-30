@@ -62,9 +62,11 @@ class CountingApp:
                     'zindexphase'], encoder['angleunit'])
                 if False not in options:
                     self._channels[name] = CapturePosition(channel, name,
-                                                           trigger, options[
-                                                               0], options[
-                                                               1],  options[2])
+                                                           trigger,
+                                                           options[0],
+                                                           options[1],
+                                                           options[2],
+                                                           encoder['start'])
                 else:
                     print("At least one of the parameters is wrong")
         else:

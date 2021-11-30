@@ -10,16 +10,19 @@ def get_ni_client(addr):
 
 
 class NI660XRPCClient:
-    def __init__(self, addr):
+    def __init__(self, addr, debug=False):
         self._proxy = ServerProxy(addr)
         self._lock = Lock()
+        self.debug = debug
 
     def __getattr__(self, item):
         def func(*args, **kwargs):
-            logging.info('NI client enter %s', item)
+            if self.debug:
+                logging.info('NI client enter %s', item)
             with self._lock:
                 result = getattr(self._proxy, item)(*args, **kwargs)
-                logging.info('NI client return %s', item)
+                if self.debug:
+                    logging.info('NI client return %s', item)
                 return result
 
         func.__name__ = item

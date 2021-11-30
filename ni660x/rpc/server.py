@@ -60,13 +60,17 @@ class CountingApp:
                 encoder = config['encoder']
                 options = self._encoder_to_object(encoder['type'], encoder[
                     'zindexphase'], encoder['angleunit'])
+                if 'start' in encoder:
+                    start_encoder = encoder['start']
+                else:
+                    start_encoder = 0
                 if False not in options:
                     self._channels[name] = CapturePosition(channel, name,
                                                            trigger,
                                                            options[0],
                                                            options[1],
                                                            options[2],
-                                                           encoder['start'])
+                                                           start_encoder)
                 else:
                     print("At least one of the parameters is wrong")
         else:

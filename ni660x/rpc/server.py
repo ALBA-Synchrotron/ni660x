@@ -213,6 +213,12 @@ class CountingApp:
             return
         self._timer.start_src = get_pfi(value)
 
+    def set_retriggable(self, value: bool):
+        self._timer.retriggable = value
+
+    def get_retriggable(self):
+        return self._timer.retriggable
+
     def is_done(self) -> bool:
         return self._timer.done
 

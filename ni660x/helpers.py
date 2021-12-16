@@ -9,6 +9,41 @@ NI6602_PFI = {
     "ctr6": {"src": "PFI15", "gate": "PFI14", "out": "PFI12", "aux": "PFI13"},
     "ctr7": {"src": "PFI11", "gate": "PFI10", "out": "PFI8",  "aux": "PFI9"}}
 
+NI6602_HUMAN = {
+    "PFI39": "ctr0/src",
+    "PFI38": "ctr0/gate",
+    "PFI37": "ctr0/aux",
+    "PFI36": "ctr0/out",
+    "PFI35": "ctr1/src",
+    "PFI34": "ctr1/gate",
+    "PFI33": "ctr1/aux",
+    "PFI32": "ctr1/out",
+    "PFI31": "ctr2/src",
+    "PFI30": "ctr2/gate",
+    "PFI29": "ctr2/aux",
+    "PFI28": "ctr2/out",
+    "PFI27": "ctr3/src",
+    "PFI26": "ctr3/gate",
+    "PFI25": "ctr3/aux",
+    "PFI24": "ctr3/out",
+    "PFI23": "ctr4/src",
+    "PFI22": "ctr4/gate",
+    "PFI21": "ctr4/aux",
+    "PFI20": "ctr4/out",
+    "PFI19": "ctr5/src",
+    "PFI18": "ctr5/gate",
+    "PFI17": "ctr5/aux",
+    "PFI16": "ctr5/out",
+    "PFI15": "ctr6/src",
+    "PFI14": "ctr6/gate",
+    "PFI13": "ctr6/aux",
+    "PFI12": "ctr6/out",
+    "PFI11": "ctr7/src",
+    "PFI10": "ctr7/gate",
+    "PFI9": "ctr7/aux",
+    "PFI8": "ctr7/out",
+}
+
 
 def get_pfi(input):
     if 'pfi' in input.lower() or 'rtsi' in input.lower():
@@ -20,3 +55,16 @@ def get_pfi(input):
 
     pfi = NI6602_PFI[counter][terminal]
     return f'/{card}/{pfi}'
+
+
+def get_human(input):
+    if 'rtsi' in input.lower():
+        return input
+
+    try:
+        _, card, pfi = input.split('/')
+    except Exception:
+        raise ValueError('Wrong definition. E.g.: /Dev1/PFI39')
+
+    human = NI6602_HUMAN[pfi]
+    return f'/{card}/{human}'

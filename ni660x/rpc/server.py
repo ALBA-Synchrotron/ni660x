@@ -10,7 +10,7 @@ from nidaqmx.constants import EncoderType, EncoderZIndexPhase, AngleUnits
 from ..counter import PulseCounter
 from ..generator import PulseTimeGenerator
 from ..positioncapture import CapturePosition
-from ..helpers import get_pfi
+from ..helpers import get_pfi, get_human
 
 # TODO Implement logs
 ChannelsList = List[str]
@@ -38,7 +38,9 @@ class CountingApp:
             for term_to in terms_to:
                 term_to = get_pfi(term_to)
                 self.system.connect_terms(term_from, term_to)
-                print('Connect', term_from, 'to', term_to)
+                msg = f'Connect {get_human(term_from)} ({term_from}) to ' \
+                      f'{get_human(term_to)} ({term_to})'
+                print(msg)
         else:
             print("Do not find the connections in the config file")
 
@@ -199,10 +201,10 @@ class CountingApp:
         """
         Return start source if it is empty the external start is disabled
         """
-        return self._timer.start_src
+        return get_human(self._timer.start_src)
 
     def set_start_src(self, value: str):
-        self._timer.start_src = value
+        self._timer.start_src = get_pfi(value)
 
     def is_done(self) -> bool:
         return self._timer.done

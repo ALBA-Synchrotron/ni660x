@@ -13,5 +13,6 @@ setup(name="ni660x",
     packages=find_packages(exclude=['test']),
     test_suite="test",
     classifiers=["License :: OSI Approved :: GNU General Public License v3 (GPLv3)",],
-    license="GNU General Public License v3"
+    license="GNU General Public License v3",
+    python_requires='<=3.10'
 )

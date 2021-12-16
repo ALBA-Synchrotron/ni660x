@@ -1,0 +1,37 @@
+#  PFI
+#"ctr0": {"src": "PFI39", "gate": "PFI38", "out": "PFI36", "aux": "PFI37"},
+#"ctr1": {"src": "PFI35", "gate": "PFI34", "out": "PFI32", "aux": "PFI33"},
+#"ctr2": {"src": "PFI31", "gate": "PFI30", "out": "PFI28", "aux": "PFI29"},
+#"ctr3": {"src": "PFI27", "gate": "PFI26", "out": "PFI24", "aux": "PFI25"},
+#"ctr4": {"src": "PFI23", "gate": "PFI22", "out": "PFI20", "aux": "PFI21"},
+#"ctr5": {"src": "PFI19", "gate": "PFI18", "out": "PFI16", "aux": "PFI17"},
+#"ctr6": {"src": "PFI15", "gate": "PFI14", "out": "PFI12", "aux": "PFI13"},
+#"ctr7": {"src": "PFI11", "gate": "PFI10", "out": "PFI8",  "aux": "PFI9"}}
+
+
+connections:
+  from: /Dev1/ctr0/out
+  to:
+     - /Dev1/RTSI0 #Internal bus channel 0
+     - /Dev1/ctr0/aux
+     - /Dev1/ctr1/out
+     - /Dev1/ctr1/aux
+
+timer:
+  channel: /Dev1/ctr0
+
+counters:
+  c1:
+      channel: /Dev1/ctr2
+      source: /Dev1/ctr2/src
+      gate: /Dev2/RTSI0
+
+position_capture:
+  mot01:
+      channel: /Dev1/ctr5
+      trigger: /Dev1/RTSI0
+      encoder:
+        type: X_4
+        zindexphase: AHIGH_BHIGH
+        angleunit: TICKS
+

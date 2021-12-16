@@ -201,9 +201,16 @@ class CountingApp:
         """
         Return start source if it is empty the external start is disabled
         """
-        return get_human(self._timer.start_src)
+        if self._timer.start_src is None:
+            value = self._timer.start_src
+        else:
+            value = get_human(self._timer.start_src)
+        return value
 
     def set_start_src(self, value: str):
+        if not value or value.lower() == 'none':
+            self._timer.start_src = None
+            return
         self._timer.start_src = get_pfi(value)
 
     def is_done(self) -> bool:

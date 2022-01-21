@@ -64,15 +64,12 @@ class BaseChannel:
         self._stop = True
         self._thread.join()
 
-    def translate(self, value):
-        return value
-
     def _read(self, samples):
         i = 0
         while not self._stop and samples != 0:
             try:
-                self._data[i] = self.translate(
-                    self._reader.read_one_sample_double(timeout=self._timeout))
+                self._data[i] = \
+                    self._reader.read_one_sample_double(timeout=self._timeout)
             except Exception:
                 continue
 

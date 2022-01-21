@@ -1,6 +1,5 @@
 from .channel import BaseChannel
-from nidaqmx.constants import AngleUnits
-import math
+
 
 class CapturePosition(BaseChannel):
 
@@ -26,13 +25,3 @@ class CapturePosition(BaseChannel):
                                               samps_per_chan=samples)
 
         super().start(samples, high_time)
-
-    def translate(self, value):
-        if self._angunit == AngleUnits.DEGREES:
-            units_per_revolution = 360.0
-        elif self._angunit == AngleUnits.RADIANS:
-            units_per_revolution = 4 * math.acos(0.0)
-        else:
-            units_per_revolution = 1.0
-
-        return value / self._pulse_per_revolution * units_per_revolution

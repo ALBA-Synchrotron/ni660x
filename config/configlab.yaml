@@ -34,4 +34,5 @@ position_capture:
         type: X_4
         zindexphase: AHIGH_BHIGH
         angleunit: TICKS
+        pulseperrevolution: 24
 

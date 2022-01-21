@@ -5,12 +5,12 @@ from typing import Dict, List
 import click
 import yaml
 from nidaqmx.system import System
-from nidaqmx.constants import EncoderType, EncoderZIndexPhase, AngleUnits
 
 from ..counter import PulseCounter
 from ..generator import PulseTimeGenerator
 from ..positioncapture import CapturePosition
-from ..helpers import get_pfi, get_human
+from ..helpers import get_pfi, get_human, get_encoder_type, \
+    get_encoder_z_index, get_encoder_angle_units
 
 # TODO Implement logs
 ChannelsList = List[str]
@@ -41,8 +41,6 @@ class CountingApp:
                 msg = f'Connect {get_human(term_from)} ({term_from}) to ' \
                       f'{get_human(term_to)} ({term_to})'
                 print(msg)
-        else:
-            print("Do not find the connections in the config file")
 
         self._timer = PulseTimeGenerator(self.config['timer']['channel'])
         self._channels = {}
@@ -51,27 +49,19 @@ class CountingApp:
                 self._channels[name] = PulseCounter(
                     config['channel'], name, get_pfi(config['gate']),
                     get_pfi(config['source']))
-        else:
-            print("Do not find the counters in the config file")
 
-        # TODO implement encoder capture
         if 'position_capture' in self.config:
             for name, config in self.config['position_capture'].items():
                 channel = config['channel']
                 trigger = get_pfi(config['trigger'])
                 encoder = config['encoder']
-                options = self._encoder_to_object(encoder['type'], encoder[
-                    'zindexphase'], encoder['angleunit'])
-                if False not in options:
-                    self._channels[name] = CapturePosition(channel, name,
-                                                           trigger,
-                                                           options[0],
-                                                           options[1],
-                                                           options[2])
-                else:
-                    print("At least one of the parameters is wrong")
-        else:
-            print("Do not find the position capture in the config file")
+                enc_type = get_encoder_type(encoder['type'])
+                enc_z_index_phase = get_encoder_z_index(encoder['zindexphase'])
+                enc_angle_unit = get_encoder_angle_units(encoder['angleunit'])
+                enc_pulse_per_revolution = encoder['pulseperrevolution']
+                self._channels[name] = CapturePosition(
+                    channel, name, trigger, enc_type, enc_z_index_phase,
+                    enc_angle_unit, enc_pulse_per_revolution)
 
     def __del__(self):
         term_from = get_pfi(self.config['connections']['from'])
@@ -222,51 +212,6 @@ class CountingApp:
     def is_done(self) -> bool:
         return self._timer.done
 
-    def _encoder_to_object(self, encodertype, encoderzindex, anlgeunits):
-        argum = []
-        encodertype = encodertype.upper()
-        encoderzindex = encoderzindex.upper()
-        anlgeunits = anlgeunits.upper()
-
-        if encodertype == "TWO_PULSE_COUNTING":
-            argum.append(EncoderType.TWO_PULSE_COUNTING)
-        elif encodertype == "X_1":
-            argum.append(EncoderType.X_1)
-        elif encodertype == "X_2":
-            argum.append(EncoderType.X_2)
-        elif encodertype == "X_4":
-            argum.append(EncoderType.X_4)
-        else:
-            argum.append(False)
-            print("The options are: TWO_PULSE_COUNTING | X_1 | X_2 | X_4 ")
-
-        if encoderzindex == "AHIGH_BHIGH":
-            argum.append(EncoderZIndexPhase.AHIGH_BHIGH)
-        elif encoderzindex == "AHIGH_BLOW":
-            argum.append(EncoderZIndexPhase.AHIGH_BLOW)
-        elif encoderzindex == "ALOW_BHIGH":
-            argum.append(EncoderZIndexPhase.ALOW_BHIGH)
-        elif encoderzindex == "ALOW_BLOW":
-            argum.append(EncoderZIndexPhase.ALOW_BLOW)
-        else:
-            argum.append(False)
-            print("The options are: AHIGH_BHIGH | AHIGH_BLOW | ALOW_BHIGH "
-                  "| ALOW_BLOW ")
-
-        if anlgeunits == "DEGREES":
-            argum.append(AngleUnits.DEGREES)
-        elif anlgeunits == "FROM_CUSTOM_SCALE":
-            argum.append(AngleUnits.FROM_CUSTOM_SCALE)
-        elif anlgeunits == "RADIANS":
-            argum.append(AngleUnits.RADIANS)
-        elif anlgeunits == "TICKS":
-            argum.append(AngleUnits.TICKS)
-        else:
-            argum.append(False)
-            print("The options are: DEGREES | FROM_CUSTOM_SCALE | RADIANS "
-                  "| TICKS ")
-
-        return argum
 
 
 @click.command()

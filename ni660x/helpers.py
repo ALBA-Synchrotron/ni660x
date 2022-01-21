@@ -1,3 +1,4 @@
+from nidaqmx.constants import EncoderType, EncoderZIndexPhase, AngleUnits
 
 NI6602_PFI = {
     "ctr0": {"src": "PFI39", "gate": "PFI38", "out": "PFI36", "aux": "PFI37"},
@@ -68,3 +69,50 @@ def get_human(input):
 
     human = NI6602_HUMAN[pfi]
     return f'/{card}/{human}'
+
+
+def get_encoder_type(input):
+    input = input.upper()
+    if input == "TWO_PULSE_COUNTING":
+       return EncoderType.TWO_PULSE_COUNTING
+    elif input == "X_1":
+        return EncoderType.X_1
+    elif input == "X_2":
+        return EncoderType.X_2
+    elif input == "X_4":
+        return EncoderType.X_4
+    else:
+        raise ValueError("The options are: "
+                         "TWO_PULSE_COUNTING | X_1 | X_2 | X_4 ")
+
+
+def get_encoder_z_index(input):
+    input = input.upper()
+    if input == "AHIGH_BHIGH":
+        return EncoderZIndexPhase.AHIGH_BHIGH
+    elif input == "AHIGH_BLOW":
+        return EncoderZIndexPhase.AHIGH_BLOW
+    elif input == "ALOW_BHIGH":
+        return EncoderZIndexPhase.ALOW_BHIGH
+    elif input == "ALOW_BLOW":
+        return EncoderZIndexPhase.ALOW_BLOW
+    else:
+        raise ValueError("The options are: AHIGH_BHIGH | "
+                         "AHIGH_BLOW | ALOW_BHIGH | ALOW_BLOW ")
+
+
+def get_encoder_angle_units(input):
+    input = input.upper()
+
+    if input == "DEGREES":
+        return AngleUnits.DEGREES
+    elif input == "FROM_CUSTOM_SCALE":
+        return AngleUnits.FROM_CUSTOM_SCALE
+    elif input == "RADIANS":
+        return AngleUnits.RADIANS
+    elif input == "TICKS":
+        return AngleUnits.TICKS
+    else:
+        raise ValueError("The options are: DEGREES | "
+                         "FROM_CUSTOM_SCALE | RADIANS | TICKS ")
+

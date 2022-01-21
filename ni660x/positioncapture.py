@@ -6,17 +6,19 @@ class CapturePosition(BaseChannel):
 
     # Builder
     def __init__(self, channel, channel_name, source_trigger, encoder_type,
-                 encoder_zindex, angle_units):
+                 encoder_zindex, angle_units, pulse_per_revolution):
         super().__init__(channel, channel_name)
         self._source_trigger = source_trigger
         self._entype = encoder_type
         self._enzindex = encoder_zindex
         self._angunit = angle_units
+        self._pulse_per_revolution = pulse_per_revolution
 
         self._task.ci_channels.add_ci_ang_encoder_chan(self._channel, "",
                                                        self._entype, False,
                                                        0, self._enzindex,
-                                                       self._angunit, 24,
+                                                       self._angunit,
+                                                       pulse_per_revolution,
                                                        0, "")
 
     def start(self, samples, high_time):
@@ -33,4 +35,4 @@ class CapturePosition(BaseChannel):
         else:
             units_per_revolution = 1.0
 
-        return value / 24 * units_per_revolution
+        return value / self._pulse_per_revolution * units_per_revolution

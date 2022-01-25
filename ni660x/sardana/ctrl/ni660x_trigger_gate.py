@@ -43,7 +43,7 @@ class NI660XRPCTriggerGateCtrl(TriggerGateController):
             raise RuntimeError(e)
 
     def StateOne(self, axis):
-        if not self._proxy.is_done():
+        if not self._proxy.is_timer_done():
             state = State.Moving
             status = 'The card(s) are acquiring'
         else:

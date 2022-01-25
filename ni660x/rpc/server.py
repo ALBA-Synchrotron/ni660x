@@ -197,9 +197,11 @@ class CountingApp:
     def get_retriggable(self):
         return self._timer.retriggable
 
-    def is_done(self) -> bool:
+    def is_timer_done(self) -> bool:
         return self._timer.done
 
+    def is_channel_done(self, name: str) -> bool:
+        return self._channels[name].done
 
 
 @click.command()

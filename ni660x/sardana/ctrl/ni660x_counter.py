@@ -88,10 +88,11 @@ class NI660XRPCCounterCtrl(CounterTimerController):
         }
 
     def StateOne(self, axis):
-        if not self._proxy.is_done():
+        name = self.channels_names[axis-1]
+        if not self._proxy.is_channel_done(name):
             state = State.Moving
             status = 'The card(s) are acquiring'
-        elif not self._sscan and self._samples > 1 and not self._sscan and \
+        elif not self._sscan and self._samples > 1 and \
             any([last_index+1 < self._samples for last_index in
                      self._last_index_read.values()]):
             state = State.Moving

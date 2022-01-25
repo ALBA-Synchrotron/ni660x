@@ -106,34 +106,49 @@ class NI660XRPCCounterCtrl(CounterTimerController):
         self.used_channels.clear()
         self._last_index_read.clear()
         self._first_encoder.clear()
-        self._proxy.stop_channels()
         self._high_time = value
+        self._first_start = False
 
         if self._synchronization not in ALLOWED_SYNC:
             raise ValueError('This controller only works with Hardware'
                              'syncrhonization')
-        self._samples = repetitions * nb_starts
+
+
         self._sscan = False
         if nb_starts > 1:
             self._sscan = True
-        self._first_start = False
+            return
+        self._samples = repetitions
 
     def LoadOne(self, axis, value, repetitions, latency):
-        pass
+        if not self._sscan:
+            return
+
+        self._last_index_read.clear()
+        self._samples = 1
+        self._high_time = value
 
     def PreStartOne(self, axis, value):
+        if not self._sscan and self._first_start:
+            return True
+
+        name = self.channels_names[axis - 1]
+        self._last_index_read[name] = -1
+
         if not self._first_start:
-            name = self.channels_names[axis-1]
             self.used_channels.append(name)
-            self._last_index_read[name] = -1
         return True
 
     def StartAll(self):
         if not self._first_start:
             self._proxy.set_channels_enabled(self.used_channels, True)
-            self._first_start = True
-            self._proxy.start_channels(self.used_channels, self._samples,
-                                       self._high_time)
+
+        if not self._sscan and self._first_start:
+            return
+
+        self._first_start = True
+        self._proxy.start_channels(self.used_channels, self._samples,
+                                   self._high_time)
 
     def ReadAll(self):
         sample_readies = []

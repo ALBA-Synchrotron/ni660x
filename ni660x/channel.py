@@ -19,7 +19,7 @@ class BaseChannel:
         self.sample_readies = 0
         self.enabled = True
         self._timeout = 0
-
+        self._reading = False
         # Create the task
         self._task = Task('task' + channel_name)
 
@@ -51,6 +51,7 @@ class BaseChannel:
         self._thread = threading.Thread(target=self._read, args=[samples])
         self._task.start()
         self._thread.start()
+        self._reading = True
 
     @property
     def data(self):
@@ -58,10 +59,14 @@ class BaseChannel:
 
     @property
     def done(self):
-        return self._task.is_task_done()
+        if self._reading:
+            return False
+        else:
+            return self._task.is_task_done()
 
     def stop(self):
         self._stop = True
+        self._reading = False
         self._thread.join()
 
     def _read(self, samples):
@@ -76,5 +81,5 @@ class BaseChannel:
             i += 1
             samples -= 1
             self.sample_readies += 1
-
+        self._reading = False
         self._task.stop()

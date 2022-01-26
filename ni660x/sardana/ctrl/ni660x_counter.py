@@ -96,10 +96,11 @@ class NI660XRPCCounterCtrl(CounterTimerController):
             any([last_index+1 < self._samples for last_index in
                      self._last_index_read.values()]):
             state = State.Moving
-            status = 'The card(s) are acquiring'
+            status = 'The card(s) finished but the controller is acquiring'
         else:
             state = State.On
             status = 'The system is ready to acquire'
+        self._log.debug('Axis %s, State: %s, Status: %s', axis, state, status)
         return state, status
 
     def PrepareOne(self, axis, value, repetitions, latency, nb_starts):
@@ -189,7 +190,7 @@ class NI660XRPCCounterCtrl(CounterTimerController):
                                 'Error: %s', axis, formula, e)
         if self._samples != 1:
             self._last_index_read[name] += len(data)
-        self._log.debug('ReadOne %s data: %s', axis, data)
+        self._log.debug('ReadOne %s : %s', axis, data)
         return data.tolist()
 
     # Axis attributes

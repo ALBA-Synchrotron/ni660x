@@ -148,6 +148,7 @@ class NI660XRPCCounterCtrl(CounterTimerController):
             return
 
         self._first_start = True
+        self._proxy.stop_channels(self.used_channels)
         self._proxy.start_channels(self.used_channels, self._samples,
                                    self._high_time)
 

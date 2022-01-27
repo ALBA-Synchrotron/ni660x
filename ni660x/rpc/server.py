@@ -114,8 +114,9 @@ class CountingApp:
         for channel in channels:
             try:
                 channel.stop()
-            except Exception:
-                pass
+            except Exception as e:
+                print(e)
+
 
     def get_names(self) -> ChannelsList:
         """

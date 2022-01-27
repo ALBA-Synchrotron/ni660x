@@ -153,8 +153,14 @@ class NI660XRPCCounterCtrl(CounterTimerController):
             return
 
         self._first_start = True
-        self._proxy.start_channels(self.used_channels, self._samples,
-                                   self._high_time)
+        for i in range(2):
+            try:
+                self._proxy.start_channels(self.used_channels, self._samples,
+                                           self._high_time)
+                break
+            except Exception:
+                self._proxy.stop_channels(self.used_channels)
+                self._log.warning('NI channels are running')
 
     def ReadAll(self):
         sample_readies = []

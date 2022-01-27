@@ -70,6 +70,7 @@ class NI660XRPCCounterCtrl(CounterTimerController):
         self._samples = 0
         self._sscan = False
         self._high_time = 0
+        self._stop = False
 
         try:
             self._addr = 'http://{}:{}'.format(self.host, self.port)
@@ -89,7 +90,10 @@ class NI660XRPCCounterCtrl(CounterTimerController):
 
     def StateOne(self, axis):
         name = self.channels_names[axis-1]
-        if not self._proxy.is_channel_done(name):
+        if self._stop:
+            state = State.On
+            status = 'The system is ready to acquire'
+        elif not self._proxy.is_channel_done(name):
             state = State.Moving
             status = 'The card(s) are acquiring'
         elif not self._sscan and self._samples > 1 and \
@@ -109,6 +113,7 @@ class NI660XRPCCounterCtrl(CounterTimerController):
         self._first_encoder.clear()
         self._high_time = value
         self._first_start = False
+        self._stop = False
 
         if self._synchronization not in ALLOWED_SYNC:
             raise ValueError('This controller only works with Hardware'
@@ -214,6 +219,7 @@ class NI660XRPCCounterCtrl(CounterTimerController):
 
     def AbortAll(self):
         self._proxy.stop_channels(self.used_channels)
+        self._stop = True
 
     def StopAll(self):
         self.AbortAll()

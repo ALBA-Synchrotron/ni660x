@@ -83,4 +83,4 @@ class BaseChannel:
             samples -= 1
             self.sample_readies += 1
         self._reading = False
-
+        self._task.stop()

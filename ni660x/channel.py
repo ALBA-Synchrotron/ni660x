@@ -65,7 +65,6 @@ class BaseChannel:
             return self._task.is_task_done()
 
     def stop(self):
-        self._task.stop()
         self._stop = True
         self._reading = False
         self._thread.join()

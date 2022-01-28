@@ -112,3 +112,6 @@ class NI660XRPCTriggerGateCtrl(TriggerGateController):
         name = name.lower()
         if name == 'start_src':
             self._proxy.set_start_src(value)
+
+    def StopOne(self, axis):
+        self.AbortOne(axis)

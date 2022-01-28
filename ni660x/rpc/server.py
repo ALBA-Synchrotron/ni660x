@@ -103,19 +103,13 @@ class CountingApp:
         self.stop_timer()
 
     def stop_timer(self):
-        try:
-            self._timer.stop()
-        except Exception:
-            pass
+        self._timer.stop()
 
     def stop_channels(self, channels=[]):
         if not channels:
-            channels = self._channels.values()
+            channels = self._channels.keys()
         for channel in channels:
-            try:
-                channel.stop()
-            except Exception as e:
-                print(e)
+            self._channels[channel].stop()
 
 
     def get_names(self) -> ChannelsList:

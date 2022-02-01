@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name="ni660x",
-    version='0.9.1',
+    version='0.9.2',
     description="RPC server for NI660X counter application",
     author="Alba sincotron",
     install_requires=["nidaqmx", "click", "pyyaml"],

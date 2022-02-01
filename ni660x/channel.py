@@ -67,7 +67,8 @@ class BaseChannel:
     def stop(self):
         self._stop = True
         self._reading = False
-        self._thread.join()
+        if self._thread is not None:
+            self._thread.join()
 
     def _read(self, samples):
         i = 0

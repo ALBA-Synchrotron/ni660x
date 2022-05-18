@@ -73,6 +73,16 @@ class NI660XRPCTriggerGateCtrl(TriggerGateController):
             # TODO implement the configuration of the external start
 
         self.high_time = active
+        if passive < 1e-7:
+            if repeats == 1:
+                self._log.warning(
+                    "using minimal passive time (1e-7 s) while requested was {}".format(passive)
+                )
+                passive = 1e-7
+            else:
+                raise ValueError(
+                    "requested passive time {} s is below limit (1e7 s)".format(passive)
+                )
         self.low_time = passive
         self.initial_delay = delay
         self.samples = repeats
